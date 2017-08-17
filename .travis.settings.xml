@@ -21,7 +21,7 @@
     </activeProfiles>
 
     <servers>
-        <<server>
+        <server>
         <id>bintray-sshaddicts-neuralswarm</id>
         <username>421p</username>
         <password>${env.API_KEY}</password>
