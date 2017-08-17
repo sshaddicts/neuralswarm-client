@@ -4,7 +4,7 @@ install:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --settings .travis.settings.xml
 
 after_success:
-  - '[[ $TRAVIS_BRANCH == "master" ]] && mvn install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --settings .travis.settings.xml'
+  - '[[ $TRAVIS_BRANCH == "master" ]] && mvn deploy -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --settings .travis.settings.xml'
 
 cache:
   directories:
