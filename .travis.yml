@@ -1,9 +1,14 @@
 language: java
 
 install:
-  - mvn deploy -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --settings .travis.settings.xml
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --settings .travis.settings.xml
+
+after_success:
+  - '[[ $TRAVIS_BRANCH == "master" ]] && mvn install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --settings .travis.settings.xml'
 
 cache:
   directories:
   - .autoconf
   - $HOME/.m2
+notifications:
+  webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
