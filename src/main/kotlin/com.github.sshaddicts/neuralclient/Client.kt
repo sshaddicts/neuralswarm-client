@@ -55,7 +55,6 @@ class Client(
                                 }
                             }
                         }
-
                     })
 
                     subscriber.onCompleted()
