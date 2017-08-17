@@ -6,7 +6,7 @@
 
     <groupId>com.github.sshaddicts</groupId>
     <artifactId>neuralswarm.client</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1</version>
 
     <repositories>
         <repository>
@@ -18,6 +18,14 @@
             <url>http://jcenter.bintray.com</url>
         </repository>
     </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-sshaddicts-neuralswarm</id>
+            <name>421p</name>
+            <url>https://api.bintray.com/maven/sshaddicts/neuralswarm/client/;publish=1</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <kotlin.version>1.1.4</kotlin.version>
@@ -107,6 +115,26 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
 
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.2</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
@@ -144,55 +172,6 @@
                 <configuration>
                     <mainClass>${main.class}</mainClass>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <archive>
-                        <index>true</index>
-                        <manifest>
-                            <mainClass>com.github.sshaddicts.nauralswarm.MainKt</mainClass>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <addClasspath>true</addClasspath>
-                        </manifest>
-                        <manifestEntries>
-                            <mode>development</mode>
-                            <url>${project.url}</url>
-                            <key>value</key>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-
-                <executions>
-                    <execution>
-                        <id>default</id>
-                        <phase>install</phase>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <!-- optional -->
-                            <!-- exclude copying test and provided dependencies -->
-                            <includeScope>runtime</includeScope>
-                            <excludeScope>provided</excludeScope>
-                            <!-- optional -->
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
