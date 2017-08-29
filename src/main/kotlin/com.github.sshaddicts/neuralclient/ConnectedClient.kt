@@ -4,5 +4,6 @@ import rx.Observable
 
 
 interface ConnectedClient {
-    fun processImage(bytes: ByteArray): Observable<ProcessedData>
+    fun auth(username: String, password: String): Observable<AuthenticatedClient>
+    fun register(username: String, password: String): Observable<AuthenticatedClient>
 }
