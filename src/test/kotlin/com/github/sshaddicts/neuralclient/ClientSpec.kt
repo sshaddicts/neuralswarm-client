@@ -28,7 +28,7 @@ object ClientSpec : Spek({
 
         it("should be able to request image processing from a server") {
 
-            val done = CompletableFuture<Any>()
+            val done: CompletableFuture<Any> = CompletableFuture()
 
             val router = WampRouterBuilder().addRealm("realm1").build()
 
@@ -88,14 +88,12 @@ object ClientSpec : Spek({
 
                             it.processImage("test".toByteArray()).subscribe {
                                 assertEquals("test", it.items.first().first)
-                                done.complete(null)
+                                done.complete(true)
                             }
                         }, ::println)
 
                 client.connect()
             }
-
-
 
             wamp.open()
 

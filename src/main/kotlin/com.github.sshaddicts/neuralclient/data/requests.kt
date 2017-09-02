@@ -1,6 +1,7 @@
 package com.github.sshaddicts.neuralclient.data
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import org.apache.commons.codec.binary.Base64
 import java.util.*
 
 data class HistoryRequest(
@@ -26,12 +27,12 @@ data class ProcessImageRequest(
 
     @get:JsonIgnore
     val bytes: ByteArray
-        get() = Base64.getMimeDecoder().decode(image)
+        get() = Base64.decodeBase64(image)
 
     companion object {
         fun fromBytes(bytes: ByteArray, token: String) = ProcessImageRequest(
                 token = token,
-                image = Base64.getMimeEncoder().encodeToString(bytes)
+                image = Base64.encodeBase64String(bytes)
         )
     }
 }
