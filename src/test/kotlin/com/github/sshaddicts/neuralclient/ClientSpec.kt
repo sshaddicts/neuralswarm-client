@@ -72,8 +72,13 @@ object ClientSpec : Spek({
 
                         println(processRequest.date)
 
+                        val node = mapper.createObjectNode()
+
+                        node.put("name", String(processRequest.bytes))
+                        node.put("price", 123.toDouble())
+
                         request.reply(mapper.createArrayNode(), mapper.valueToTree(ProcessedData(
-                                listOf(String(processRequest.bytes) to 123.toDouble())
+                                listOf(node)
                         )))
                     } catch (e: Throwable) {
                         e.printStackTrace()
@@ -87,7 +92,7 @@ object ClientSpec : Spek({
                             assertEquals("txTFgqD8N9+fI37T4pw6nS8m7DYGswaR6OT16bbjWg9AjEMT6r/bB4XHv1/L3gqTUsl/AgvBjM23l1HTgzKmTExeqG0zNp9dZ+TNoDiTUKMk9eQXQ6nkMkZBKYok/4uB", it.token)
 
                             it.processImage("test".toByteArray()).subscribe {
-                                assertEquals("test", it.items.first().first)
+                                assertEquals("test", it.items.first()["name"].textValue())
                                 done.complete(true)
                             }
                         }, ::println)
