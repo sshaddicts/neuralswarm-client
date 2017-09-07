@@ -47,8 +47,8 @@ class Client(
                 }
 
         override fun register(username: String, password: String): Observable<AuthenticatedClient> =
-                call("user.register", RegistrationRequest(username, password)).map { pep ->
-                    createAuthenticatedClient(pep.arguments().first().textValue())
+                call("user.register", RegistrationRequest(username, password)).map {
+                    createAuthenticatedClient(it.arguments().first().textValue())
                 }
     }
 
