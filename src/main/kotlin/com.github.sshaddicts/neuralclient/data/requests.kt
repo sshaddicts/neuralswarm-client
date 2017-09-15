@@ -20,8 +20,14 @@ data class RegistrationRequest(
 
 data class ProcessImageRequest(
         val token: String,
-        val image: String
+        val image: String,
+        val details: ImageDetails
 ) {
+
+    data class ImageDetails(
+            val width: Double,
+            val height: Double
+    )
 
     val date = Date()
 
@@ -30,9 +36,10 @@ data class ProcessImageRequest(
         get() = Base64.decodeBase64(image)
 
     companion object {
-        fun fromBytes(bytes: ByteArray, token: String) = ProcessImageRequest(
+        fun create(bytes: ByteArray, details: ImageDetails, token: String) = ProcessImageRequest(
                 token = token,
-                image = Base64.encodeBase64String(bytes)
+                image = Base64.encodeBase64String(bytes),
+                details = details
         )
     }
 }

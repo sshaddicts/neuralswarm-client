@@ -53,13 +53,16 @@ class Client(
     }
 
     private fun createAuthenticatedClient(token: String) = object : AuthenticatedClient {
+        override fun processImage(bytes: ByteArray, width: Double, height: Double): Observable<ProcessedData> =
+                processImage(bytes, ProcessImageRequest.ImageDetails(width, height))
+
         override fun getFullHistory(): Observable<History> =
                 call("history.get", HistoryRequest(token)).map {
                     mapper.treeToValue<History>(it.keywordArguments())
                 }
 
-        override fun processImage(bytes: ByteArray): Observable<ProcessedData> =
-                call("process.image", ProcessImageRequest.fromBytes(bytes, token)).map {
+        override fun processImage(bytes: ByteArray, details: ProcessImageRequest.ImageDetails): Observable<ProcessedData> =
+                call("process.image", ProcessImageRequest.create(bytes, details, token)).map {
                     mapper.treeToValue<ProcessedData>(it.keywordArguments())
                 }
 
