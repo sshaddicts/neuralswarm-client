@@ -10,7 +10,7 @@ interface AuthenticatedClient {
 
     val token: String
 
-    fun processImage(bytes: ByteArray, width: Double, height: Double): Observable<ProcessedData>
+    fun processImage(bytes: ByteArray, width: Int, height: Int): Observable<ProcessedData>
     fun processImage(bytes: ByteArray, details: ProcessImageRequest.ImageDetails): Observable<ProcessedData>
     fun getFullHistory(): Observable<History>
 }

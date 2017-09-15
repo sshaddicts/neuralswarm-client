@@ -70,8 +70,8 @@ object ClientSpec : Spek({
                     try {
                         val processRequest = mapper.treeToValue<ProcessImageRequest>(request.keywordArguments())
 
-                        assertEquals(20.toDouble(), processRequest.details.width)
-                        assertEquals(20.toDouble(), processRequest.details.height)
+                        assertEquals(20, processRequest.details.width)
+                        assertEquals(20, processRequest.details.height)
 
                         val node = mapper.createObjectNode()
 
@@ -92,7 +92,7 @@ object ClientSpec : Spek({
 
                             assertEquals("txTFgqD8N9+fI37T4pw6nS8m7DYGswaR6OT16bbjWg9AjEMT6r/bB4XHv1/L3gqTUsl/AgvBjM23l1HTgzKmTExeqG0zNp9dZ+TNoDiTUKMk9eQXQ6nkMkZBKYok/4uB", it.token)
 
-                            it.processImage("test".toByteArray(), 20.toDouble(), 20.toDouble()).subscribe {
+                            it.processImage("test".toByteArray(), 20, 20).subscribe {
                                 assertEquals("test", it.items.first()["name"].textValue())
                                 done.complete(true)
                             }

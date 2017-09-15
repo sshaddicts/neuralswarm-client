@@ -25,8 +25,8 @@ data class ProcessImageRequest(
 ) {
 
     data class ImageDetails(
-            val width: Double,
-            val height: Double
+            val width: Int,
+            val height: Int
     )
 
     val date = Date()
