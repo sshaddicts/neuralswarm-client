@@ -1,7 +1,8 @@
 package com.github.sshaddicts.neuralclient.data
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.apache.commons.codec.binary.Base64
+import com.github.sshaddicts.neuralclient.encoding.Base64Coder
+import com.github.sshaddicts.neuralclient.encoding.CommonBase64Coder
 import java.util.*
 
 data class HistoryRequest(
@@ -21,7 +22,9 @@ data class RegistrationRequest(
 data class ProcessImageRequest(
         val token: String,
         val image: String,
-        val details: ImageDetails
+        val details: ImageDetails,
+        @JsonIgnore
+        private val coder: Base64Coder = CommonBase64Coder()
 ) {
 
     data class ImageDetails(
@@ -33,12 +36,12 @@ data class ProcessImageRequest(
 
     @get:JsonIgnore
     val bytes: ByteArray
-        get() = Base64.decodeBase64(image)
+        get() = coder.decode(image)
 
     companion object {
-        fun create(bytes: ByteArray, details: ImageDetails, token: String) = ProcessImageRequest(
+        fun create(bytes: ByteArray, details: ImageDetails, token: String, coder: Base64Coder) = ProcessImageRequest(
                 token = token,
-                image = Base64.encodeBase64String(bytes),
+                image = coder.encode(bytes),
                 details = details
         )
     }
