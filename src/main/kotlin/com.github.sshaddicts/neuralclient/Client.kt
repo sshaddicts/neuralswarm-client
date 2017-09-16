@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.github.sshaddicts.neuralclient.data.*
+import com.github.sshaddicts.neuralclient.encoding.Base64Coder
+import com.github.sshaddicts.neuralclient.encoding.CommonBase64Coder
 import rx.Observable
 import ws.wamp.jawampa.WampClient
 import ws.wamp.jawampa.WampClientBuilder
@@ -14,7 +16,8 @@ import java.util.concurrent.TimeUnit
 
 class Client(
         uri: String,
-        realm: String
+        realm: String,
+        private val coder: Base64Coder = CommonBase64Coder()
 ) {
     private val mapper: ObjectMapper = ObjectMapper().registerKotlinModule()
 
@@ -62,7 +65,7 @@ class Client(
                 }
 
         override fun processImage(bytes: ByteArray, details: ProcessImageRequest.ImageDetails): Observable<ProcessedData> =
-                call("process.image", ProcessImageRequest.create(bytes, details, token)).map {
+                call("process.image", ProcessImageRequest.create(bytes, details, token, coder)).map {
                     mapper.treeToValue<ProcessedData>(it.keywordArguments())
                 }
 
