@@ -112,7 +112,7 @@ class Client(
     }
 
     private infix fun ObjectMapper.`will handle`(response: Reply) = ProcessImageResponse(
-            this.treeToValue(response.keywordArguments()),
+            this.treeToValue<ProcessedData>(response.keywordArguments()),
             Base64.decodeBase64(response.arguments().first().textValue())
     )
 
