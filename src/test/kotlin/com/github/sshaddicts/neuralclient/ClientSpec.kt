@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.github.sshaddicts.neuralclient.data.AuthenticationRequest
 import com.github.sshaddicts.neuralclient.data.ProcessImageRequest
 import com.github.sshaddicts.neuralclient.data.ProcessedData
+import org.apache.commons.codec.binary.Base64
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -70,17 +71,16 @@ object ClientSpec : Spek({
                     try {
                         val processRequest = mapper.treeToValue<ProcessImageRequest>(request.keywordArguments())
 
-                        assertEquals(20, processRequest.details.width)
-                        assertEquals(20, processRequest.details.height)
-
                         val node = mapper.createObjectNode()
 
                         node.put("name", String(processRequest.bytes))
                         node.put("price", 123.toDouble())
 
-                        request.reply(mapper.createArrayNode(), mapper.valueToTree(ProcessedData(
-                                listOf(node)
-                        )))
+                        request.reply(
+                                mapper.valueToTree(listOf(Base64.encodeBase64String("test".toByteArray()))),
+                                mapper.valueToTree(ProcessedData(
+                                        listOf(node)
+                                )))
                     } catch (e: Throwable) {
                         e.printStackTrace()
                     }
@@ -92,8 +92,9 @@ object ClientSpec : Spek({
 
                             assertEquals("txTFgqD8N9+fI37T4pw6nS8m7DYGswaR6OT16bbjWg9AjEMT6r/bB4XHv1/L3gqTUsl/AgvBjM23l1HTgzKmTExeqG0zNp9dZ+TNoDiTUKMk9eQXQ6nkMkZBKYok/4uB", it.token)
 
-                            it.processImage("test".toByteArray(), 20, 20).subscribe {
-                                assertEquals("test", it.items.first()["name"].textValue())
+                            it.processImage("test".toByteArray()).subscribe {
+                                assertEquals("test", it.data.items.first()["name"].textValue())
+                                assertEquals("test", String(it.overlay))
                                 done.complete(true)
                             }
                         }, ::println)

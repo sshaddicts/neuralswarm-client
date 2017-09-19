@@ -22,27 +22,27 @@ data class RegistrationRequest(
 data class ProcessImageRequest(
         val token: String,
         val image: String,
-        val details: ImageDetails,
         @JsonIgnore
-        private val coder: Base64Coder = CommonBase64Coder()
+        private val coder: Base64Coder
 ) {
+    constructor(image: String) : this(anonToken, image)
+    constructor(bytes: ByteArray) : this(anonToken, bytes)
+    constructor(image: String, coder: Base64Coder) : this(anonToken, image, coder)
+    constructor(bytes: ByteArray, coder: Base64Coder) : this(anonToken, bytes, coder)
+    constructor(token: String, image: String) : this(token, image, CommonBase64Coder())
+    constructor(token: String, bytes: ByteArray) : this(token, bytes, CommonBase64Coder())
+    constructor(token: String, bytes: ByteArray, coder: Base64Coder) : this(token, coder.encode(bytes), coder)
 
-    data class ImageDetails(
-            val width: Int,
-            val height: Int
-    )
-
-    val date = Date()
+    @get:JsonIgnore
+    val isAnonymous: Boolean = token == anonToken
 
     @get:JsonIgnore
     val bytes: ByteArray
         get() = coder.decode(image)
 
+    val date = Date()
+
     companion object {
-        fun create(bytes: ByteArray, details: ImageDetails, token: String, coder: Base64Coder) = ProcessImageRequest(
-                token = token,
-                image = coder.encode(bytes),
-                details = details
-        )
+        private val anonToken = "anonymous"
     }
 }
