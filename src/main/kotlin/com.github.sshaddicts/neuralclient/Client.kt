@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.github.sshaddicts.neuralclient.data.*
 import com.github.sshaddicts.neuralclient.encoding.Base64Coder
 import com.github.sshaddicts.neuralclient.encoding.CommonBase64Coder
-import org.apache.commons.codec.binary.Base64
 import rx.Observable
 import ws.wamp.jawampa.Reply
 import ws.wamp.jawampa.WampClient
@@ -112,8 +111,8 @@ class Client(
     }
 
     private infix fun ObjectMapper.`will handle`(response: Reply) = ProcessImageResponse(
-            this.treeToValue<ProcessedData>(response.keywordArguments()),
-            Base64.decodeBase64(response.arguments().first().textValue())
+            this.treeToValue(response.keywordArguments()),
+            coder.decode(response.arguments().first().textValue())
     )
 
     private fun call(topic: String, item: Any) =
