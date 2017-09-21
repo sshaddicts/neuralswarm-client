@@ -152,7 +152,7 @@
                 <configuration>
                     <outputFormat>html</outputFormat>
 
-                    <outputDir>${project.basedir}/doc</outputDir>
+                    <outputDir>${project.basedir}/docs</outputDir>
 
                     <sourceLinks>
                         <link>
