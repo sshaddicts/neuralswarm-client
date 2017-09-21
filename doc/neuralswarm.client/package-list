@@ -1,0 +1,6 @@
+$dokka.format:html
+$dokka.linkExtension:html
+
+com.github.sshaddicts.neuralclient
+com.github.sshaddicts.neuralclient.data
+com.github.sshaddicts.neuralclient.encoding

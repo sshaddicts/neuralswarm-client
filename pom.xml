@@ -6,7 +6,7 @@
 
     <groupId>com.github.sshaddicts</groupId>
     <artifactId>neuralswarm.client</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <packaging>jar</packaging>
 
     <distributionManagement>
@@ -29,6 +29,14 @@
         <main.class>com.github.sshaddicts.neuralclient.MainKt</main.class>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jcenter</id>
+            <name>JCenter</name>
+            <url>https://jcenter.bintray.com/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <dependencies>
 
@@ -101,7 +109,12 @@
             <version>5.0.0-M4</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.0.0-M4</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -123,6 +136,41 @@
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
         <plugins>
+
+            <plugin>
+                <groupId>org.jetbrains.dokka</groupId>
+                <artifactId>dokka-maven-plugin</artifactId>
+                <version>0.9.15</version>
+                <executions>
+                    <execution>
+                        <phase>pre-site</phase>
+                        <goals>
+                            <goal>dokka</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <outputFormat>html</outputFormat>
+
+                    <outputDir>${project.basedir}/doc</outputDir>
+
+                    <sourceLinks>
+                        <link>
+                            <dir>${project.basedir}/src/main/kotlin</dir>
+                            <!-- URL showing where the source code can be accessed through the web browser -->
+                            <url>https://github.com/sshaddicts/neuralswarm.client/tree/master/src/main/kotlin</url>
+                            <!--Suffix which is used to append the line number to the URL. Use #L for GitHub -->
+                            <urlSuffix>#L</urlSuffix>
+                        </link>
+                    </sourceLinks>
+
+                    <externalDocumentationLinks>
+                        <link>
+                            <url>http://www.atetric.com/atetric/javadoc/ws.wamp.jawampa/jawampa-core/0.5.0/</url>
+                        </link>
+                    </externalDocumentationLinks>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
