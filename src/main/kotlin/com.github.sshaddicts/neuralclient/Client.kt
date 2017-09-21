@@ -14,38 +14,17 @@ import ws.wamp.jawampa.WampClientBuilder
 import ws.wamp.jawampa.connection.IWampClientConnectionConfig
 import ws.wamp.jawampa.transport.netty.NettyWampClientConnectorProvider
 import ws.wamp.jawampa.transport.netty.NettyWampConnectionConfig
-import java.util.*
 import java.util.concurrent.TimeUnit
 
+/**
+ * Main package's class that uses [WampClient] to communicate with realm.
+ */
 class Client(
         uri: String,
         realm: String,
         maxFramePayloadLength: Int,
         private val coder: Base64Coder
 ) {
-    data class ProcessImageResponse(
-            val data: ProcessedData,
-            val overlay: ByteArray
-    ) {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as ProcessImageResponse
-
-            if (data != other.data) return false
-            if (!Arrays.equals(overlay, other.overlay)) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var result = data.hashCode()
-            result = 31 * result + Arrays.hashCode(overlay)
-            return result
-        }
-    }
-
     private val `one megabyte` = 10240
 
     private val mapper: ObjectMapper = ObjectMapper().registerKotlinModule()
@@ -86,16 +65,22 @@ class Client(
 
         override fun auth(username: String, password: String): Observable<AuthenticatedClient> =
                 call("user.auth", AuthenticationRequest(username, password)).map {
-                    createAuthenticatedClient(it.arguments().first().textValue())
+                    createAuthenticatedClient(it.arguments().first().textValue(), username)
                 }
 
         override fun register(username: String, password: String): Observable<AuthenticatedClient> =
                 call("user.register", RegistrationRequest(username, password)).map {
-                    createAuthenticatedClient(it.arguments().first().textValue())
+                    createAuthenticatedClient(it.arguments().first().textValue(), username)
                 }
     }
 
-    private fun createAuthenticatedClient(token: String) = object : AuthenticatedClient {
+    private fun createAuthenticatedClient(token: String, username: String) = object : AuthenticatedClient {
+        override val notification: Observable<Notification> = Observable.merge(
+                wamp.makeSubscription("broadcast")
+                        .map { mapper.treeToValue<Notification>(it.keywordArguments()) },
+                wamp.makeSubscription(coder.encode(username.toByteArray()))
+                        .map { mapper.treeToValue<Notification>(it.keywordArguments()) }
+        )
 
         override fun getFullHistory(): Observable<History> =
                 call("history.get", HistoryRequest(token)).map {
