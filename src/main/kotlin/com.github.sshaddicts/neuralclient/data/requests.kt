@@ -1,6 +1,5 @@
 package com.github.sshaddicts.neuralclient.data
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.github.sshaddicts.neuralclient.encoding.Base64Coder
 import com.github.sshaddicts.neuralclient.encoding.CommonBase64Coder
@@ -20,23 +19,13 @@ data class RegistrationRequest(
         val password: String
 )
 
-data class ProcessImageRequest(
-        val token: String,
+data class ProcessImageRequest @JvmOverloads constructor(
+        val token: String = anonToken,
         val image: String,
 
         @JsonIgnore
-        val coder: Base64Coder
+        val coder: Base64Coder = CommonBase64Coder()
 ) {
-
-    @JsonCreator
-    constructor(token: String, image: String) : this(token, image, CommonBase64Coder())
-
-    constructor(image: String) : this(anonToken, image)
-    constructor(bytes: ByteArray) : this(anonToken, bytes)
-    constructor(image: String, coder: Base64Coder) : this(anonToken, image, coder)
-    constructor(bytes: ByteArray, coder: Base64Coder) : this(anonToken, bytes, coder)
-    constructor(token: String, bytes: ByteArray) : this(token, bytes, CommonBase64Coder())
-    constructor(token: String, bytes: ByteArray, coder: Base64Coder) : this(token, coder.encode(bytes), coder)
 
     @get:JsonIgnore
     val isAnonymous: Boolean = token == anonToken
@@ -49,5 +38,9 @@ data class ProcessImageRequest(
 
     companion object {
         private val anonToken = "anonymous"
+
+        @JvmOverloads
+        fun createFromBytes(token: String = anonToken, bytes: ByteArray, coder: Base64Coder = CommonBase64Coder()) =
+                ProcessImageRequest(token, coder.encode(bytes), coder)
     }
 }
