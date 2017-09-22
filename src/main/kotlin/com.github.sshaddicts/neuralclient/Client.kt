@@ -19,19 +19,19 @@ import java.util.concurrent.TimeUnit
 /**
  * Main package's class that uses [WampClient] to communicate with realm.
  */
-class Client(
+class Client @JvmOverloads constructor(
         uri: String,
         realm: String,
-        maxFramePayloadLength: Int,
-        private val coder: Base64Coder
+        private val coder: Base64Coder = CommonBase64Coder(),
+        maxFramePayloadLength: Int = 20
 ) {
-    private val `one megabyte` = 10240
+    private val oneMegabyte = 10240
 
     private val mapper: ObjectMapper = ObjectMapper().registerKotlinModule()
 
     private val config: IWampClientConnectionConfig = NettyWampConnectionConfig
             .Builder()
-            .withMaxFramePayloadLength(maxFramePayloadLength * `one megabyte`)
+            .withMaxFramePayloadLength(maxFramePayloadLength * oneMegabyte)
             .build()
 
     private val wamp: WampClient = WampClientBuilder()
@@ -51,16 +51,13 @@ class Client(
     val status: Observable<State>
         get() = wamp.statusChanged()
 
-    constructor(uri: String, realm: String, maxFramePayloadLength: Int) : this(uri, realm, maxFramePayloadLength, CommonBase64Coder())
-    constructor(uri: String, realm: String) : this(uri, realm, 20)
-
     fun connect() = wamp.open()
     fun disconnect() = wamp.close()
 
     private fun createConnectedClient() = object : ConnectedClient {
         override fun processImage(bytes: ByteArray): Observable<ProcessImageResponse> =
-                call("process.image", ProcessImageRequest(bytes, coder)).map {
-                    mapper `will handle` it
+                call("process.image", ProcessImageRequest.createFromBytes(bytes = bytes, coder = coder)).map {
+                    mapper handle it
                 }
 
         override fun auth(username: String, password: String): Observable<AuthenticatedClient> =
@@ -88,14 +85,14 @@ class Client(
                 }
 
         override fun processImage(bytes: ByteArray): Observable<ProcessImageResponse> =
-                call("process.image", ProcessImageRequest(token, bytes, coder)).map {
-                    mapper `will handle` it
+                call("process.image", ProcessImageRequest.createFromBytes(token, bytes, coder)).map {
+                    mapper handle it
                 }
 
         override val token: String = token
     }
 
-    private infix fun ObjectMapper.`will handle`(response: Reply) = ProcessImageResponse(
+    private infix fun ObjectMapper.handle(response: Reply) = ProcessImageResponse(
             this.treeToValue(response.keywordArguments()),
             coder.decode(response.arguments().first().textValue())
     )
